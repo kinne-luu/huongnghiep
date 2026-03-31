@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HƯỚNG NGHIỆP TIN HỌC 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --facebook: #1877F2;
+            --text: #1f2937;
+            --bg: #f8fafc;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .menu>li {
+            position: relative;
+        }
+
+        .menu a {
+            display: block;
+            padding: 15px 18px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* Style riêng cho nút Contact Me trên Menu */
+        .menu a.contact-link {
+            color: var(--facebook);
+            border: 2px solid var(--facebook);
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin-left: 10px;
+        }
+
+        .menu a.contact-link:hover {
+            background: var(--facebook);
+            color: white;
+        }
+
+        .submenu {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 260px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            list-style: none;
+            padding: 10px 0;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .menu li:hover .submenu {
+            display: block;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #eee;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-facebook {
+            background: var(--facebook);
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #1f2937;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Hướng Nghiệp Với Tin Học</h1>
+        <p>Khám phá 16 cơ hội nghề nghiệp trong thời đại số</p>
+    </header>
+
+    <nav class="navbar">
+        <ul class="menu">
+            <li><a href="#gioi-thieu">Giới Thiệu</a></li>
+            <li>
+                <a href="#">Lĩnh vực tin ▼</a>
+                <ul class="submenu">
+                    <li><a href="#pt-phan-mem">Phát triển phần mềm</a></li>
+                    <li><a href="#an-ninh">An ninh mạng</a></li>
+                    <li><a href="#kiem-thu">Kiểm thử viên</a></li>
+                    <li><a href="#ql-kiem-thu">Quản lí kiểm thử</a></li>
+                    <li><a href="#qt-mang">Quản trị mạng</a></li>
+                    <li><a href="#tk-giao-dien">Thiết kế giao diện</a></li>
+                    <li><a href="#cloud">Điện toán đám mây</a></li>
+                    <li><a href="#iot">Kỹ sư IoT</a></li>
+                    <li><a href="#ai">Kỹ sư AI</a></li>
+                    <li><a href="#tk-do-hoa">Thiết kế đồ họa</a></li>
+                    <li><a href="#tk-truyen-thong">Thiết kế truyền thông</a></li>
+                    <li><a href="#web">Phát triển web</a></li>
+                    <li><a href="#ki-xao">Kĩ xảo điện ảnh</a></li>
+                    <li><a href="#du-lieu">Phân tích dữ liệu</a></li>
+                    <li><a href="#gis">Kỹ sư GIS</a></li>
+                    <li><a href="#tai-chinh">Công nghệ tài chính</a></li>
+                </ul>
+            </li>
+            <li><a href="#dang-ky">Đăng Ký</a></li>
+            <li><a href="https://www.facebook.com/share/17YTRmYBS2/" target="_blank" class="contact-link"><i class="fab fa-facebook"></i> Contact Me</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="card" id="gioi-thieu">
+            <h2>Giới Thiệu</h2>
+            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000" alt="Intro">
+            <p>Tin học là một ngành học mang tính ứng dụng cao, là nền tảng cho mọi hoạt động kinh doanh, giáo dục và dịch vụ hiện đại.</p>
+        </section>
+
+        <section class="card" id="pt-phan-mem">
+            <h2>Phát triển phần mềm</h2>
+            <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=1000" alt="Software">
+        </section>
+
+        <section class="card" id="an-ninh">
+            <h2>An ninh mạng</h2>
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000" alt="Security">
+            <p>Bảo vệ hệ thống thông tin khỏi sự tấn công và truy cập trái phép. Đảm bảo an toàn dữ liệu cho tổ chức.</p>
+        </section>
+
+        <section class="card" id="tai-chinh">
+            <h2>Công nghệ tài chính (Fintech)</h2>
+            <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000" alt="Fintech">
+        </section>
+
+        <section id="dang-ky" style="text-align: center; margin-bottom: 50px;">
+            <button class="btn" id="btnToggle">Đăng Ký Nhận Thông Tin</button>
+            
+            <div class="card form-container" id="regForm">
+                <h3>Đăng Ký Tư Vấn</h3>
+                <form>
+                    <input type="text" placeholder="Họ và tên" required>
+                    <input type="email" placeholder="Email" required>
+                    <select>
+                        <option>Chọn ngành bạn quan tâm nhất</option>
+                        <option>Phát triển phần mềm</option>
+                        <option>An ninh mạng</option>
+                        <option>Kỹ sư AI</option>
+                        <option>Thiết kế đồ họa</option>
+                        <option>Phát triển web</option>
+                        <option>Phân tích dữ liệu</option>
+                        <option>Công nghệ tài chính</option>
+                    </select>
+                    <button type="submit" class="btn" style="width: 100%;">Gửi Thông Tin</button>
+                </form>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <p>Hoặc liên hệ trực tiếp với chúng mình qua:</p>
+                <a href="https://www.facebook.com/share/17YTRmYBS2/" target="_blank" class="btn btn-facebook">
+                    <i class="fab fa-facebook"></i> Chat với Hồng Nhựt & Linh Chi
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Hướng Nghiệp Tin Học | Thiết kế bởi <strong>HỒNG NHỰT VÀ LINH CHI Cute</strong></p>
+    </footer>
+
+    <script>
+        const btn = document.getElementById('btnToggle');
+        const form = document.getElementById('regForm');
+        btn.onclick = () => {
+            form.classList.toggle('show');
+            btn.innerText = form.classList.contains('show') ? "Đóng Form" : "Đăng Ký Nhận Thông Tin";
+        };
+    </script>
+
+</body>
+
+</html>
